@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <script src="https://cdn.jsdelivr.net/npm/keycloak-js@24.0.1/dist/keycloak.min.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input, button {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+        }
+        button {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+ <!--       <h2>Welcome</h2>
+        <div id="user-info">
+            <p>Loading authentication...</p>
+        </div> -->
+        <button onclick="keycloak.logout()">Logout</button>
+    </div>
+
+    <script>
+        const keycloak = new Keycloak({
+            url: 'http://10.65.20.227:8080/',       // change if Keycloak runs elsewhere
+            realm: 'sample2',                    // replace with your realm name
+            clientId: 'client2'                // replace with your client ID
+        });
+
+        keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+            if (authenticated) {
+                document.getElementById('user-info').innerHTML = `
+                    <p>Logged in as: <strong>${keycloak.tokenParsed.preferred_username}</strong></p>
+                    <p>Email: ${keycloak.tokenParsed.email || 'N/A'}</p>
+                `;
+            } else {
+                keycloak.login();
+            }
+        }).catch(error => {
+            document.getElementById('user-info').innerHTML = `<p style="color: red;">Login failed.</p>`;
+            console.error("Keycloak init error:", error);
+        });
+    </script>
+</body>
+</html>
